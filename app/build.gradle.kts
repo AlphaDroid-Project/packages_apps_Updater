@@ -33,8 +33,8 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.crdroid.updater"
-        minSdk = 30
+        applicationId = "com.alpha.updater"
+        minSdk = 32
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
