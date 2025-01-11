@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2024 The LineageOS Project
+ * Copyright (C) 2017-2025 The LineageOS Project
  * Copyright (C) 2023 AlphaDroid
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,10 @@
  */
 package com.alpha.updater;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.PowerManager;
 import android.text.SpannableString;
@@ -41,8 +39,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -57,7 +53,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.alpha.updater.R;
 import com.alpha.updater.controller.UpdaterController;
 import com.alpha.updater.controller.UpdaterService;
-import com.alpha.updater.misc.BuildInfoUtils;
 import com.alpha.updater.misc.Constants;
 import com.alpha.updater.misc.StringGenerator;
 import com.alpha.updater.misc.Utils;
@@ -605,7 +600,7 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
     private boolean isBatteryLevelOk() {
         Intent intent = mActivity.registerReceiver(null,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        if (!intent.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false)) {
+        if (intent == null || !intent.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false)) {
             return true;
         }
         int percent = Math.round(100.f * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 100) /

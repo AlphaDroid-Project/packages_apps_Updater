@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2023 The LineageOS Project
+ * Copyright (C) 2017-2025 The LineageOS Project
  * Copyright (C) 2023-2025 AlphaDroid
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,17 +80,6 @@ public class Utils {
         return new File(context.getString(R.string.download_path));
     }
 
-    public static File getExportPath(Context context) {
-        File dir = new File(context.getExternalFilesDir(null),
-                context.getString(R.string.export_path));
-        if (!dir.isDirectory()) {
-            if (dir.exists() || !dir.mkdirs()) {
-                throw new RuntimeException("Could not create directory");
-            }
-        }
-        return dir;
-    }
-
     public static File getCachedUpdateList(Context context) {
         return new File(context.getCacheDir(), "updates.json");
     }
@@ -129,7 +118,7 @@ public class Utils {
         return true;
     }
 
-    private static boolean compareVersions(String a, String b) {
+    private static boolean compareVersions(String a, String b, boolean allowMajorUpgrades) {
         try {
             int majorA = Integer.parseInt(a.split("\\.")[0]);
             int minorA = Integer.parseInt(a.split("\\.")[1]);
@@ -137,7 +126,9 @@ public class Utils {
             int majorB = Integer.parseInt(b.split("\\.")[0]);
             int minorB = Integer.parseInt(b.split("\\.")[1]);
 
-            return majorA == majorB && minorA >= minorB;
+            // Return early and allow if we allow major version upgrades
+            return (allowMajorUpgrades && majorA > majorB)
+                    || (majorA == majorB && minorA >= minorB);
         } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
             return false;
         }
@@ -148,10 +139,15 @@ public class Utils {
     }
 
     public static boolean canInstall(UpdateBaseInfo update) {
+        boolean allowMajorUpgrades = SystemProperties.getBoolean(
+                Constants.PROP_ALLOW_MAJOR_UPGRADES, false);
+
         return (SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) ||
                 update.getTimestamp() > SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) &&
                 compareVersions(
-                        update.getVersion(), SystemProperties.get(Constants.PROP_BUILD_VERSION));
+                        update.getVersion(),
+                        SystemProperties.get(Constants.PROP_BUILD_VERSION),
+                        allowMajorUpgrades);
     }
 
     public static List<UpdateInfo> parseJson(File file, boolean compatibleOnly)
@@ -345,10 +341,11 @@ public class Utils {
         }
 
         // Ideally the database is empty when we get here
-        UpdatesDbHelper dbHelper = new UpdatesDbHelper(context);
         List<String> knownPaths = new ArrayList<>();
-        for (UpdateInfo update : dbHelper.getUpdates()) {
-            knownPaths.add(update.getFile().getAbsolutePath());
+        try (UpdatesDbHelper dbHelper = new UpdatesDbHelper(context)) {
+            for (UpdateInfo update : dbHelper.getUpdates()) {
+                knownPaths.add(update.getFile().getAbsolutePath());
+            }
         }
         for (File file : files) {
             if (!knownPaths.contains(file.getAbsolutePath())) {

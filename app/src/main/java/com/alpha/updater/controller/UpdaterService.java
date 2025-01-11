@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2022 The LineageOS Project
+ * Copyright (C) 2017-2025 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import androidx.preference.PreferenceManager;
 import com.alpha.updater.R;
 import com.alpha.updater.UpdaterReceiver;
 import com.alpha.updater.UpdatesActivity;
-import com.alpha.updater.misc.BuildInfoUtils;
 import com.alpha.updater.misc.Constants;
 import com.alpha.updater.misc.StringGenerator;
 import com.alpha.updater.misc.Utils;
@@ -46,7 +45,6 @@ import com.alpha.updater.model.Update;
 import com.alpha.updater.model.UpdateInfo;
 import com.alpha.updater.model.UpdateStatus;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -127,7 +125,7 @@ public class UpdaterService extends Service {
                 } else if (UpdaterController.ACTION_UPDATE_REMOVED.equals(intent.getAction())) {
                     final boolean isLocalUpdate = Update.LOCAL_ID.equals(downloadId);
                     Bundle extras = mNotificationBuilder.getExtras();
-                    if (extras != null && !isLocalUpdate && downloadId.equals(
+                    if (!isLocalUpdate && downloadId != null && downloadId.equals(
                             extras.getString(UpdaterController.EXTRA_DOWNLOAD_ID))) {
                         mNotificationBuilder.setExtras(null);
                         UpdateInfo update = mUpdaterController.getUpdate(downloadId);
