@@ -53,6 +53,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.alpha.updater.R;
 import com.alpha.updater.controller.UpdaterController;
 import com.alpha.updater.controller.UpdaterService;
+import com.alpha.updater.misc.BuildInfoUtils;
 import com.alpha.updater.misc.Constants;
 import com.alpha.updater.misc.StringGenerator;
 import com.alpha.updater.misc.Utils;
