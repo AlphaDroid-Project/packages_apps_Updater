@@ -42,6 +42,7 @@ public final class Constants {
     public static final String PROP_AB_DEVICE = "ro.build.ab_update";
     public static final String PROP_ALLOW_MAJOR_UPGRADES = "alpha.updater.allow_major_upgrades";
     public static final String PROP_BUILD_DATE = "ro.build.date.utc";
+    public static final String PROP_BUILD_BRANCH ="ro.alpha.build.branch";
     public static final String PROP_BUILD_VERSION = "ro.alpha.build.version";
     public static final String PROP_BUILD_TYPE = "ro.alpha.release.type";
     public static final String PROP_BUILD_VARIANT = "ro.alpha.build.variant";
