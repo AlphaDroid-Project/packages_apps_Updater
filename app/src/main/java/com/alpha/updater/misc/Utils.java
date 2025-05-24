@@ -183,12 +183,7 @@ public class Utils {
     }
 
     public static String getServerURL(Context context) {
-        String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
-                SystemProperties.get(Constants.PROP_DEVICE));
-
-        String serverUrl = context.getString(R.string.updater_server_url);
-
-        return serverUrl.replace("{device}", device);
+        return getUrl(context.getString(R.string.updater_server_url), null);
     }
 
     public static String getUpgradeBlockedURL(Context context) {
@@ -198,9 +193,17 @@ public class Utils {
     }
 
     public static String getChangelogURL(Context context) {
-        String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
-                SystemProperties.get(Constants.PROP_DEVICE));
-        return context.getString(R.string.menu_changelog_url, device);
+        return getUrl(context.getString(R.string.menu_changelog_url),
+                context.getString(R.string.empty_changelog_url));
+    }
+
+    private static String getUrl(String baseUrl, String def) {
+        String device = SystemProperties.get(Constants.PROP_DEVICE, "");
+        String branch = SystemProperties.get(Constants.PROP_BUILD_BRANCH, "");
+        if (branch.isEmpty() || device.isEmpty()) {
+            return def;
+        }
+        return baseUrl.replace("{branch}", branch).replace("{device}", device);
     }
 
     public static void triggerUpdate(Context context, String downloadId) {

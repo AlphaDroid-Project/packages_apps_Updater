@@ -77,7 +77,13 @@ public class UpdatesCheckReceiver extends BroadcastReceiver {
 
         final File json = Utils.getCachedUpdateList(context);
         final File jsonNew = new File(json.getAbsolutePath() + UUID.randomUUID());
+
         String url = Utils.getServerURL(context);
+        if (url == null) {
+            Log.d(TAG, "Invalid URL");
+            return;
+        }
+
         DownloadClient.DownloadCallback callback = new DownloadClient.DownloadCallback() {
             @Override
             public void onFailure(boolean cancelled) {
