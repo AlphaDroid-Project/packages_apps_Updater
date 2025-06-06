@@ -32,13 +32,10 @@
             android:launchMode="singleTop">
             <intent-filter android:priority="2">
                 <action android:name="android.settings.SYSTEM_UPDATE_SETTINGS" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="com.android.settings.SHORTCUT" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
