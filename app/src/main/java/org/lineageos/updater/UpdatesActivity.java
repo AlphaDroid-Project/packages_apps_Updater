@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater;
+package com.alpha.updater;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -68,15 +68,17 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
-import org.lineageos.updater.controller.UpdaterController;
-import org.lineageos.updater.controller.UpdaterService;
-import org.lineageos.updater.download.DownloadClient;
-import org.lineageos.updater.misc.BuildInfoUtils;
-import org.lineageos.updater.misc.Constants;
-import org.lineageos.updater.misc.StringGenerator;
-import org.lineageos.updater.misc.Utils;
-import org.lineageos.updater.model.Update;
-import org.lineageos.updater.model.UpdateInfo;
+
+import com.alpha.updater.R;
+import com.alpha.updater.controller.UpdaterController;
+import com.alpha.updater.controller.UpdaterService;
+import com.alpha.updater.download.DownloadClient;
+import com.alpha.updater.misc.BuildInfoUtils;
+import com.alpha.updater.misc.Constants;
+import com.alpha.updater.misc.StringGenerator;
+import com.alpha.updater.misc.Utils;
+import com.alpha.updater.model.Update;
+import com.alpha.updater.model.UpdateInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -446,8 +448,14 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
     private void downloadUpdatesList(final boolean manualRefresh) {
         final File jsonFile = Utils.getCachedUpdateList(this);
         final File jsonFileTmp = new File(jsonFile.getAbsolutePath() + UUID.randomUUID());
+
         String url = Utils.getServerURL(this);
+
         Log.d(TAG, "Checking " + url);
+        if (url == null) {
+            Log.d(TAG, "Invalid URL");
+            return;
+        }
 
         DownloadClient.DownloadCallback callback = new DownloadClient.DownloadCallback() {
             @Override

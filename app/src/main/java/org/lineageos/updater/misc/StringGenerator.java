@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater.misc;
+package com.alpha.updater.misc;
 
 import android.content.Context;
 import android.content.res.Resources;
 
-import org.lineageos.updater.R;
+import com.alpha.updater.R;
 
 import java.text.DateFormat;
 import java.util.Date;

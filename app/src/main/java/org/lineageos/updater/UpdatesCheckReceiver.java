@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater;
+package com.alpha.updater;
 
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
@@ -30,9 +30,11 @@ import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
 import org.json.JSONException;
-import org.lineageos.updater.download.DownloadClient;
-import org.lineageos.updater.misc.Constants;
-import org.lineageos.updater.misc.Utils;
+
+import com.alpha.updater.R;
+import com.alpha.updater.download.DownloadClient;
+import com.alpha.updater.misc.Constants;
+import com.alpha.updater.misc.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +77,13 @@ public class UpdatesCheckReceiver extends BroadcastReceiver {
 
         final File json = Utils.getCachedUpdateList(context);
         final File jsonNew = new File(json.getAbsolutePath() + UUID.randomUUID());
+
         String url = Utils.getServerURL(context);
+        if (url == null) {
+            Log.d(TAG, "Invalid URL");
+            return;
+        }
+
         DownloadClient.DownloadCallback callback = new DownloadClient.DownloadCallback() {
             @Override
             public void onFailure(boolean cancelled) {
