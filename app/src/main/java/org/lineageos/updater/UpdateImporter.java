@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater;
+package com.alpha.updater;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -23,11 +23,11 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
-import org.lineageos.updater.controller.UpdaterController;
-import org.lineageos.updater.misc.StringGenerator;
-import org.lineageos.updater.misc.Utils;
-import org.lineageos.updater.model.Update;
-import org.lineageos.updater.model.UpdateStatus;
+import com.alpha.updater.controller.UpdaterController;
+import com.alpha.updater.misc.StringGenerator;
+import com.alpha.updater.misc.Utils;
+import com.alpha.updater.model.Update;
+import com.alpha.updater.model.UpdateStatus;
 
 import java.io.File;
 import java.io.FileInputStream;

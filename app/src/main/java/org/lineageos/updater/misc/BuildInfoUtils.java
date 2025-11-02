@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017 The LineageOS Project
+ * Copyright (C) 2023 AlphaDroid
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater.misc;
+package com.alpha.updater.misc;
 
 import android.os.SystemProperties;
 
@@ -28,5 +29,9 @@ public final class BuildInfoUtils {
 
     public static String getBuildVersion() {
         return SystemProperties.get(Constants.PROP_BUILD_VERSION);
+    }
+
+    public static String getBuildVariant() {
+        return SystemProperties.get(Constants.PROP_BUILD_VARIANT);
     }
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017-2025 The LineageOS Project
+ * Copyright (C) 2023-2025 AlphaDroid
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater.misc;
+package com.alpha.updater.misc;
 
 import android.app.AlarmManager;
 import android.content.ClipData;
@@ -27,6 +28,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.SystemProperties;
 import android.os.storage.StorageManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,12 +37,12 @@ import androidx.preference.PreferenceManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.lineageos.updater.R;
-import org.lineageos.updater.UpdatesDbHelper;
-import org.lineageos.updater.controller.UpdaterService;
-import org.lineageos.updater.model.Update;
-import org.lineageos.updater.model.UpdateBaseInfo;
-import org.lineageos.updater.model.UpdateInfo;
+import com.alpha.updater.R;
+import com.alpha.updater.UpdatesDbHelper;
+import com.alpha.updater.controller.UpdaterService;
+import com.alpha.updater.model.Update;
+import com.alpha.updater.model.UpdateBaseInfo;
+import com.alpha.updater.model.UpdateInfo;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,6 +63,7 @@ public class Utils {
 
     private static String mMaintainer;
     private static String mBuildType;
+    private static String mBuildVariant;
     private static String mForum;
     private static String mTelegram;
     private static String mGapps;
@@ -93,6 +96,7 @@ public class Utils {
         update.setVersion(object.getString("version"));
         mMaintainer = object.getString("maintainer");
         mBuildType = object.getString("buildtype");
+        mBuildVariant = object.getString("buildvariant");
         mForum = object.getString("forum");
         mTelegram = object.getString("telegram");
         mGapps = object.getString("gapps");
@@ -105,8 +109,9 @@ public class Utils {
     }
 
     public static boolean isCompatible(UpdateBaseInfo update) {
-        if (!SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) &&
-                update.getTimestamp() <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) {
+        if ((!SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) &&
+                update.getTimestamp() <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) ||
+                !isSamebuildVariant()) {
             Log.d(TAG, update.getName() + " is older than/equal to the current build");
             return false;
         }
@@ -127,6 +132,10 @@ public class Utils {
         } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
             return false;
         }
+    }
+
+    private static boolean isSamebuildVariant() {
+        return mBuildVariant.equals(BuildInfoUtils.getBuildVariant());
     }
 
     public static boolean canInstall(UpdateBaseInfo update) {
@@ -174,12 +183,7 @@ public class Utils {
     }
 
     public static String getServerURL(Context context) {
-        String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
-                SystemProperties.get(Constants.PROP_DEVICE));
-
-        String serverUrl = context.getString(R.string.updater_server_url);
-
-        return serverUrl.replace("{device}", device);
+        return getUrl(context.getString(R.string.updater_server_url), null);
     }
 
     public static String getUpgradeBlockedURL(Context context) {
@@ -189,9 +193,17 @@ public class Utils {
     }
 
     public static String getChangelogURL(Context context) {
-        String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
-                SystemProperties.get(Constants.PROP_DEVICE));
-        return context.getString(R.string.menu_changelog_url, device);
+        return getUrl(context.getString(R.string.menu_changelog_url),
+                context.getString(R.string.empty_changelog_url));
+    }
+
+    private static String getUrl(String baseUrl, String def) {
+        String device = SystemProperties.get(Constants.PROP_DEVICE, "");
+        String branch = SystemProperties.get(Constants.PROP_BUILD_BRANCH, "");
+        if (branch.isEmpty() || device.isEmpty()) {
+            return def;
+        }
+        return baseUrl.replace("{branch}", branch).replace("{device}", device);
     }
 
     public static void triggerUpdate(Context context, String downloadId) {
@@ -436,6 +448,10 @@ public class Utils {
 
     public static String getBuildType() {
         return mBuildType;
+    }
+
+    public static String getBuildVariant() {
+        return mBuildVariant;
     }
 
     public static String getForum() {

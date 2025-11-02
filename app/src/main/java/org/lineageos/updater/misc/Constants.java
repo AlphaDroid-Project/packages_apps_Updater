@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017-2023 The LineageOS Project
+ * Copyright (C) 2023 AlphaDroid
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater.misc;
+package com.alpha.updater.misc;
 
 public final class Constants {
 
@@ -39,12 +40,15 @@ public final class Constants {
     public static final String UNCRYPT_FILE_EXT = ".uncrypt";
 
     public static final String PROP_AB_DEVICE = "ro.build.ab_update";
-    public static final String PROP_ALLOW_MAJOR_UPGRADES = "lineage.updater.allow_major_upgrades";
+    public static final String PROP_ALLOW_MAJOR_UPGRADES = "alpha.updater.allow_major_upgrades";
     public static final String PROP_BUILD_DATE = "ro.build.date.utc";
-    public static final String PROP_BUILD_VERSION = "ro.crdroid.build.version";
-    public static final String PROP_DEVICE = "ro.crdroid.device";
+    public static final String PROP_BUILD_BRANCH ="ro.alpha.build.branch";
+    public static final String PROP_BUILD_VERSION = "ro.alpha.build.version";
+    public static final String PROP_BUILD_TYPE = "ro.alpha.release.type";
+    public static final String PROP_BUILD_VARIANT = "ro.alpha.build.variant";
+    public static final String PROP_DEVICE = "ro.alpha.device";
     public static final String PROP_NEXT_DEVICE = "ro.updater.next_device";
-    public static final String PROP_UPDATER_ALLOW_DOWNGRADING = "crdroid.updater.allow_downgrading";
+    public static final String PROP_UPDATER_ALLOW_DOWNGRADING = "ro.ota.allow_downgrade";
 
     public static final String PREF_INSTALL_OLD_TIMESTAMP = "install_old_timestamp";
     public static final String PREF_INSTALL_NEW_TIMESTAMP = "install_new_timestamp";

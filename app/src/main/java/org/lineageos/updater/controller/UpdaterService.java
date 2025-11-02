@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater.controller;
+package com.alpha.updater.controller;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -35,15 +35,15 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 
-import org.lineageos.updater.R;
-import org.lineageos.updater.UpdaterReceiver;
-import org.lineageos.updater.UpdatesActivity;
-import org.lineageos.updater.misc.Constants;
-import org.lineageos.updater.misc.StringGenerator;
-import org.lineageos.updater.misc.Utils;
-import org.lineageos.updater.model.Update;
-import org.lineageos.updater.model.UpdateInfo;
-import org.lineageos.updater.model.UpdateStatus;
+import com.alpha.updater.R;
+import com.alpha.updater.UpdaterReceiver;
+import com.alpha.updater.UpdatesActivity;
+import com.alpha.updater.misc.Constants;
+import com.alpha.updater.misc.StringGenerator;
+import com.alpha.updater.misc.Utils;
+import com.alpha.updater.model.Update;
+import com.alpha.updater.model.UpdateInfo;
+import com.alpha.updater.model.UpdateStatus;
 
 import java.io.IOException;
 import java.text.DateFormat;

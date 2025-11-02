@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2017-2025 The LineageOS Project
+ * Copyright (C) 2023 AlphaDroid
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.lineageos.updater;
+package com.alpha.updater;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -49,13 +50,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.lineageos.updater.controller.UpdaterController;
-import org.lineageos.updater.controller.UpdaterService;
-import org.lineageos.updater.misc.Constants;
-import org.lineageos.updater.misc.StringGenerator;
-import org.lineageos.updater.misc.Utils;
-import org.lineageos.updater.model.UpdateInfo;
-import org.lineageos.updater.model.UpdateStatus;
+import com.alpha.updater.R;
+import com.alpha.updater.controller.UpdaterController;
+import com.alpha.updater.controller.UpdaterService;
+import com.alpha.updater.misc.BuildInfoUtils;
+import com.alpha.updater.misc.Constants;
+import com.alpha.updater.misc.StringGenerator;
+import com.alpha.updater.misc.Utils;
+import com.alpha.updater.model.UpdateInfo;
+import com.alpha.updater.model.UpdateStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -276,8 +279,9 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
                 DateFormat.LONG, update.getTimestamp());
         String buildVersion = mActivity.getString(R.string.list_build_version,
                 update.getVersion());
+        String buildVariant = BuildInfoUtils.getBuildVariant();
         viewHolder.mBuildDate.setText(buildDate);
-        viewHolder.mBuildVersion.setText(buildVersion);
+        viewHolder.mBuildVersion.setText(buildVersion + " (" + buildVariant + ")");
         viewHolder.mBuildVersion.setCompoundDrawables(null, null, null, null);
 
         if (activeLayout) {
