@@ -489,14 +489,19 @@ public class UpdaterController {
         if (entry != null) {
             Update update = entry.mUpdate;
 
+            // Keep INSTALLED so the reboot UI remains, but drop the zip once.
+            // Do not notify: status is unchanged, and notifying re-enters
+            // UpdaterService's INSTALLED handler which calls deleteUpdate again
+            // (infinite loop / ANR for local updates that always auto-delete).
             if (isWaitingForReboot(downloadId)) {
-                new Thread(() -> {
-                    File file = update.getFile();
-                    if (file.exists() && !file.delete()) {
-                        Log.e(TAG, "Could not delete " + file.getAbsolutePath());
-                    }
-                }).start();
-                notifyUpdateChange(downloadId);
+                final File file = update.getFile();
+                if (file != null && file.exists()) {
+                    new Thread(() -> {
+                        if (file.exists() && !file.delete()) {
+                            Log.e(TAG, "Could not delete " + file.getAbsolutePath());
+                        }
+                    }).start();
+                }
                 return;
             }
 
