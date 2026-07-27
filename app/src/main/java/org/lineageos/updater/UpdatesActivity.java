@@ -18,6 +18,7 @@ package com.alpha.updater;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.UiModeManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -85,6 +86,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class UpdatesActivity extends UpdatesListActivity implements UpdateImporter.Callbacks {
 
@@ -568,161 +570,51 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
             MaintainerName.setVisibility(View.VISIBLE);
         }
 
-        ImageView forumImage = findViewById(R.id.support_forum);
-        String forum = Utils.getForum();
-        if (forum == null || forum.isEmpty()) {
-            forum = preferences.getString("forum", null);
-            if (forum != null) {
-                Utils.setForum(forum);
-            }
-        }
-        if (forum != null) {
-            String url = forum;
-            forumImage.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(intent);
-            });
-        }
+        setupSupportLink(R.id.support_forum, Utils.getForum(), "forum",
+                Utils::setForum, preferences);
+        setupSupportLink(R.id.support_telegram, Utils.getTelegram(), "telegram",
+                Utils::setTelegram, preferences);
+        setupSupportLink(R.id.support_recovery, Utils.getRecovery(), "recovery",
+                Utils::setRecovery, preferences);
+        setupSupportLink(R.id.support_paypal, Utils.getPaypal(), "paypal",
+                Utils::setPaypal, preferences);
+        setupSupportLink(R.id.support_gapps, Utils.getGapps(), "gapps",
+                Utils::setGapps, preferences);
+        setupSupportLink(R.id.support_firmware, Utils.getFirmware(), "firmware",
+                Utils::setFirmware, preferences);
+        setupSupportLink(R.id.support_modem, Utils.getModem(), "modem",
+                Utils::setModem, preferences);
+        setupSupportLink(R.id.support_bootloader, Utils.getBootloader(), "bootloader",
+                Utils::setBootloader, preferences);
+    }
 
-        ImageView telegramImage = findViewById(R.id.support_telegram);
-        String telegram = Utils.getTelegram();
-        if (telegram == null || telegram.isEmpty()) {
-            telegram = preferences.getString("telegram", null);
-            if (telegram != null) {
-                Utils.setTelegram(telegram);
+    private void setupSupportLink(int viewId, String value, String prefKey,
+            Consumer<String> cacheSetter, SharedPreferences preferences) {
+        ImageView image = findViewById(viewId);
+        String url = value;
+        if (url == null || url.isEmpty()) {
+            url = preferences.getString(prefKey, null);
+            if (url != null && !url.isEmpty()) {
+                cacheSetter.accept(url);
             }
         }
-        if (telegram == null || telegram.isEmpty()) {
-            telegramImage.setVisibility(View.GONE);
-        } else {
-            telegramImage.setVisibility(View.VISIBLE);
-            String url = telegram;
-            telegramImage.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(intent);
-            });
+        if (url == null || url.isEmpty()) {
+            image.setVisibility(View.GONE);
+            return;
         }
+        image.setVisibility(View.VISIBLE);
+        final String linkUrl = url;
+        image.setOnClickListener(v -> openSupportLink(linkUrl));
+    }
 
-        ImageView recoveryImage = findViewById(R.id.support_recovery);
-        String recovery = Utils.getRecovery();
-        if (recovery == null || recovery.isEmpty()) {
-            recovery = preferences.getString("recovery", null);
-            if (recovery != null) {
-                Utils.setRecovery(recovery);
-            }
-        }
-        if (recovery == null || recovery.isEmpty()) {
-            recoveryImage.setVisibility(View.GONE);
-        } else {
-            recoveryImage.setVisibility(View.VISIBLE);
-            String url = recovery;
-            recoveryImage.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(intent);
-            });
-        }
-
-        ImageView paypalImage = findViewById(R.id.support_paypal);
-        String paypal = Utils.getPaypal();
-        if (paypal == null || paypal.isEmpty()) {
-            paypal = preferences.getString("paypal", null);
-            if (paypal != null) {
-                Utils.setPaypal(paypal);
-            }
-        }
-        if (paypal == null || paypal.isEmpty()) {
-            paypalImage.setVisibility(View.GONE);
-        } else {
-            paypalImage.setVisibility(View.VISIBLE);
-            String url = paypal;
-            paypalImage.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(intent);
-            });
-        }
-
-        ImageView gappsImage = findViewById(R.id.support_gapps);
-        String gapps = Utils.getGapps();
-        if (gapps == null || gapps.isEmpty()) {
-            gapps = preferences.getString("gapps", null);
-            if (gapps != null) {
-                Utils.setGapps(gapps);
-            }
-        }
-        if (gapps == null || gapps.isEmpty()) {
-            gappsImage.setVisibility(View.GONE);
-        } else {
-            gappsImage.setVisibility(View.VISIBLE);
-            String url = gapps;
-            gappsImage.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(intent);
-            });
-        }
-
-        ImageView firmwareImage = findViewById(R.id.support_firmware);
-        String firmware = Utils.getFirmware();
-        if (firmware == null || firmware.isEmpty()) {
-            firmware = preferences.getString("firmware", null);
-            if (firmware != null) {
-                Utils.setFirmware(firmware);
-            }
-        }
-        if (firmware == null || firmware.isEmpty()) {
-            firmwareImage.setVisibility(View.GONE);
-        } else {
-            firmwareImage.setVisibility(View.VISIBLE);
-            String url = firmware;
-            firmwareImage.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(intent);
-            });
-        }
-
-        ImageView modemImage = findViewById(R.id.support_modem);
-        String modem = Utils.getModem();
-        if (modem == null || modem.isEmpty()) {
-            modem = preferences.getString("modem", null);
-            if (modem != null) {
-                Utils.setModem(modem);
-            }
-        }
-        if (modem == null || modem.isEmpty()) {
-            modemImage.setVisibility(View.GONE);
-        } else {
-            modemImage.setVisibility(View.VISIBLE);
-            String url = modem;
-            modemImage.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(intent);
-            });
-        }
-
-        ImageView bootloaderImage = findViewById(R.id.support_bootloader);
-        String bootloader = Utils.getBootloader();
-        if (bootloader == null || bootloader.isEmpty()) {
-            bootloader = preferences.getString("bootloader", null);
-            if (bootloader != null) {
-                Utils.setBootloader(bootloader);
-            }
-        }
-        if (bootloader == null || bootloader.isEmpty()) {
-            bootloaderImage.setVisibility(View.GONE);
-        } else {
-            bootloaderImage.setVisibility(View.VISIBLE);
-            String url = bootloader;
-            bootloaderImage.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                startActivity(intent);
-            });
+    private void openSupportLink(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Could not open support link " + url, e);
+            showSnackbar(R.string.snack_unable_to_open_link, Snackbar.LENGTH_LONG);
         }
     }
 
