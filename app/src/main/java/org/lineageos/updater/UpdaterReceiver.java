@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
-import android.os.SystemProperties;
 
 import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
@@ -52,7 +51,7 @@ public class UpdaterReceiver extends BroadcastReceiver {
             return false;
         }
 
-        long buildTimestamp = SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0);
+        long buildTimestamp = BuildInfoUtils.getBuildDateTimestamp();
         long lastBuildTimestamp = preferences.getLong(Constants.PREF_INSTALL_OLD_TIMESTAMP, -1);
         return buildTimestamp == lastBuildTimestamp;
     }

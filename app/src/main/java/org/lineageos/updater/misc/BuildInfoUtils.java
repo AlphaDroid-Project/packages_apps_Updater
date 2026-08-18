@@ -24,7 +24,11 @@ public final class BuildInfoUtils {
     }
 
     public static long getBuildDateTimestamp() {
-        return SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0);
+        long timestamp = SystemProperties.getLong(Constants.PROP_SYSTEM_BUILD_DATE, 0);
+        if (timestamp == 0) {
+            timestamp = SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0);
+        }
+        return timestamp;
     }
 
     public static String getBuildVersion() {

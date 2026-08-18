@@ -397,19 +397,24 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
 
         List<String> updateIds = new ArrayList<>();
         List<UpdateInfo> sortedUpdates = controller.getUpdates();
-        if (sortedUpdates.isEmpty()) {
+        sortedUpdates.sort((u1, u2) -> Long.compare(u2.getTimestamp(), u1.getTimestamp()));
+        for (UpdateInfo update : sortedUpdates) {
+            if (Update.LOCAL_ID.equals(update.getDownloadId()) ||
+                    controller.isWaitingForReboot(update.getDownloadId()) ||
+                    controller.isInstallingUpdate(update.getDownloadId()) ||
+                    (update.getAvailableOnline() && Utils.isCompatible(update))) {
+                updateIds.add(update.getDownloadId());
+            }
+        }
+        if (updateIds.isEmpty()) {
             findViewById(R.id.no_new_updates_view).setVisibility(View.VISIBLE);
             findViewById(R.id.recycler_view).setVisibility(View.GONE);
         } else {
             findViewById(R.id.no_new_updates_view).setVisibility(View.GONE);
             findViewById(R.id.recycler_view).setVisibility(View.VISIBLE);
-            sortedUpdates.sort((u1, u2) -> Long.compare(u2.getTimestamp(), u1.getTimestamp()));
-            for (UpdateInfo update : sortedUpdates) {
-                updateIds.add(update.getDownloadId());
-            }
-            mAdapter.setData(updateIds);
-            mAdapter.notifyDataSetChanged();
         }
+        mAdapter.setData(updateIds);
+        mAdapter.notifyDataSetChanged();
 
         // Cache build info
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);

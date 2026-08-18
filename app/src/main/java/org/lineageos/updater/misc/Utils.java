@@ -108,10 +108,19 @@ public class Utils {
         return update;
     }
 
+    public static boolean isNewerBuild(UpdateBaseInfo update) {
+        if (SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false)) {
+            return true;
+        }
+        return update.getTimestamp() > BuildInfoUtils.getBuildDateTimestamp();
+    }
+
     public static boolean isCompatible(UpdateBaseInfo update) {
-        if ((!SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) &&
-                update.getTimestamp() <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) ||
-                !isSamebuildVariant()) {
+        if (!isSamebuildVariant()) {
+            Log.d(TAG, update.getName() + " is a different build variant");
+            return false;
+        }
+        if (!isNewerBuild(update)) {
             Log.d(TAG, update.getName() + " is older than/equal to the current build");
             return false;
         }
@@ -139,8 +148,7 @@ public class Utils {
     }
 
     public static boolean canInstall(UpdateBaseInfo update) {
-        if (!SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) &&
-                update.getTimestamp() <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) {
+        if (!isNewerBuild(update)) {
             return false;
         }
         // Local version is "Local update (date)", not major.minor.
@@ -318,7 +326,7 @@ public class Utils {
 
         removeUncryptFiles(downloadPath);
 
-        long buildTimestamp = SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0);
+        long buildTimestamp = BuildInfoUtils.getBuildDateTimestamp();
         long prevTimestamp = preferences.getLong(Constants.PREF_INSTALL_OLD_TIMESTAMP, 0);
         String lastUpdatePath = preferences.getString(Constants.PREF_INSTALL_PACKAGE_PATH, null);
         boolean reinstalling = preferences.getBoolean(Constants.PREF_INSTALL_AGAIN, false);

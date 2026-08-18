@@ -323,16 +323,27 @@ public class UpdaterController {
     public void setUpdatesAvailableOnline(List<String> downloadIds, boolean purgeList) {
         List<String> toRemove = new ArrayList<>();
         for (DownloadEntry entry : mDownloads.values()) {
-            boolean online = downloadIds.contains(entry.mUpdate.getDownloadId());
-            entry.mUpdate.setAvailableOnline(online);
-            if (!online && purgeList &&
-                    entry.mUpdate.getPersistentStatus() == UpdateStatus.Persistent.UNKNOWN) {
-                toRemove.add(entry.mUpdate.getDownloadId());
+            Update update = entry.mUpdate;
+            final boolean isLocal = Update.LOCAL_ID.equals(update.getDownloadId());
+            boolean online = !isLocal && downloadIds.contains(update.getDownloadId());
+            update.setAvailableOnline(online);
+            if (!purgeList || isLocal || isInstallingUpdate(update.getDownloadId()) ||
+                    isWaitingForReboot(update.getDownloadId())) {
+                continue;
+            }
+            // downloadIds is the compatible JSON set (newer timestamp, same
+            // variant). Drop leftovers that are the same/older than the
+            // installed build, including previously downloaded zips.
+            if (!online) {
+                toRemove.add(update.getDownloadId());
             }
         }
         for (String downloadId : toRemove) {
             Log.d(TAG, downloadId + " no longer available online, removing");
-            mDownloads.remove(downloadId);
+            DownloadEntry entry = mDownloads.remove(downloadId);
+            if (entry != null) {
+                deleteUpdateAsync(entry.mUpdate);
+            }
             notifyUpdateDelete(downloadId);
         }
     }
