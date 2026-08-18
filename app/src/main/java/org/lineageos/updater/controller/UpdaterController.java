@@ -341,6 +341,17 @@ public class UpdaterController {
         return addUpdate(update, true);
     }
 
+    /** Put a local zip in the map, replacing any leftover {@link Update#LOCAL_ID} entry. */
+    public void addLocalUpdate(Update update) {
+        update.setAvailableOnline(false);
+        if (mDownloads.containsKey(update.getDownloadId())) {
+            Log.d(TAG, "Replacing existing local update");
+        } else {
+            Log.d(TAG, "Adding download: " + update.getDownloadId());
+        }
+        mDownloads.put(update.getDownloadId(), new DownloadEntry(update));
+    }
+
     public boolean addUpdate(final UpdateInfo updateInfo, boolean availableOnline) {
         Log.d(TAG, "Adding download: " + updateInfo.getDownloadId());
         if (mDownloads.containsKey(updateInfo.getDownloadId())) {
@@ -510,8 +521,7 @@ public class UpdaterController {
             update.setPersistentStatus(UpdateStatus.Persistent.UNKNOWN);
             deleteUpdateAsync(update);
 
-            final boolean isLocalUpdate = Update.LOCAL_ID.equals(downloadId);
-            if (!isLocalUpdate && !update.getAvailableOnline()) {
+            if (!update.getAvailableOnline()) {
                 Log.d(TAG, "Download no longer available online, removing");
                 mDownloads.remove(downloadId);
                 notifyUpdateDelete(downloadId);

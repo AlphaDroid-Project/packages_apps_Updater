@@ -83,6 +83,14 @@ public class UpdateImporter {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private boolean onPicked(Uri uri) {
+        final UpdaterController controller = UpdaterController.getInstance(activity);
+        if (controller.isInstallingUpdate(Update.LOCAL_ID) ||
+                controller.isWaitingForReboot(Update.LOCAL_ID)) {
+            Log.e(TAG, "Cannot import a local update while one is installing");
+            callbacks.onImportCompleted(null);
+            return true;
+        }
+
         callbacks.onImportStarted();
 
         workingThread = new Thread(() -> {
@@ -91,7 +99,7 @@ public class UpdateImporter {
                 importedFile = importFile(uri);
 
                 final Update update = buildLocalUpdate(importedFile);
-                addUpdate(update);
+                UpdaterController.getInstance(activity).addLocalUpdate(update);
                 activity.runOnUiThread(() -> callbacks.onImportCompleted(update));
             } catch (Exception e) {
                 Log.e(TAG, "Failed to import update package", e);
@@ -156,11 +164,6 @@ public class UpdateImporter {
         update.setPersistentStatus(UpdateStatus.Persistent.VERIFIED);
         update.setVersion(String.format("%s (%s)", name, buildDate));
         return update;
-    }
-
-    private void addUpdate(Update update) {
-        UpdaterController controller = UpdaterController.getInstance(activity);
-        controller.addUpdate(update, false);
     }
 
     private long getTimeStamp(File file) {

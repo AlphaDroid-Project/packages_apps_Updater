@@ -139,15 +139,20 @@ public class Utils {
     }
 
     public static boolean canInstall(UpdateBaseInfo update) {
+        if (!SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) &&
+                update.getTimestamp() <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) {
+            return false;
+        }
+        // Local version is "Local update (date)", not major.minor.
+        if (Update.LOCAL_ID.equals(update.getDownloadId())) {
+            return true;
+        }
         boolean allowMajorUpgrades = SystemProperties.getBoolean(
                 Constants.PROP_ALLOW_MAJOR_UPGRADES, false);
-
-        return (SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) ||
-                update.getTimestamp() > SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) &&
-                compareVersions(
-                        update.getVersion(),
-                        SystemProperties.get(Constants.PROP_BUILD_VERSION),
-                        allowMajorUpgrades);
+        return compareVersions(
+                update.getVersion(),
+                SystemProperties.get(Constants.PROP_BUILD_VERSION),
+                allowMajorUpgrades);
     }
 
     public static List<UpdateInfo> parseJson(File file, boolean compatibleOnly)
